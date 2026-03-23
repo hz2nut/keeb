@@ -50,7 +50,7 @@ class Layout:
 	def __eq__(self, other):
 		if not isinstance(other, Layout):
 			return False
-		return self.letters == other.letters
+		return self.letters == other.letters or self.flatten() == other.flatten_reverse()
 
 	def __hash__(self):
 		return hash(tuple(tuple(r) for r in self.letters))
@@ -98,24 +98,22 @@ class Layout:
 				continue
 			r1, c1, f1, e1, h1, is_center1 = stats[a]
 			r2, _, f2, e2, h2, is_center2 = stats[b]
+			if h1 != h2: continue
 			row_delta = abs(r1 - r2)
 			is_center = is_center1 or is_center2
-			is_switched = h1 > h2
 			i = (a in VOWELS) + (b in VOWELS)
 
 			# sfb
 			if f1 == f2:
 				weight = [4.0, 2.0, 1.0][i]
 				weight *= CENTER_WEIGHT if is_center else 1.0
-				weight *= SWITCH_WEIGHT if is_switched else 1.0
 				weight *= (ROW_WEIGHT ** -row_delta)
 				sfb += count * weight * (e1+e2)
 			else:
 				has_gap = abs(f1-f2) > 1
 				# scissors
 				if is_center or (not has_gap and row_delta == 2) :
-					weight = SWITCH_WEIGHT if is_switched else 1.0
-					scissors += count * weight * (e1+e2)
+					scissors += count * (e1+e2)
 				else: # rolling
 					weight = 1.0
 					if f1 > f2: # inroll
@@ -124,7 +122,6 @@ class Layout:
 						weight = [0.4, 0.6, 0.3][i]
 					weight *= (GAP_WEIGHT ** has_gap)
 					weight *= (ROW_WEIGHT ** row_delta)
-					weight *= SWITCH_WEIGHT if is_switched else 1.0
 					rolling += count * weight * (K / (e1+e2))
 
 		max_sum = MAX_E * 3
@@ -144,7 +141,6 @@ class Layout:
 			has_gap1 = abs(f1 - f2) > 1
 			has_gap2 = abs(f2 - f3) > 1
 			has_gap_sum = has_gap1 + has_gap2
-			is_switched = h1 > h2 or h2 > h3
 
 			# sfs
 			if f1 == f3 and f1 != f2:
@@ -170,7 +166,6 @@ class Layout:
 				else:
 					s = -1
 					e = K / ((max_sum + min_sum) - (e1+e2+e3))
-				weight *= SWITCH_WEIGHT ** (s * is_switched)
 				weight *= GAP_WEIGHT ** (s * has_gap_sum)
 				weight *= ROW_WEIGHT ** (s * row_delta_sum)
 				rolling += count * weight * e
@@ -220,7 +215,7 @@ EFFORT_GRID = [
 	[1.5, 1.2, 1.0, 1.0, 4.0],
 	[2.8, 2.3, 2.0, 1.5, 4.5],
 ]
-EFFORT_GRID = [r + [v * 2 for v in r[::-1]] for r in EFFORT_GRID]
+EFFORT_GRID = [r + r[::-1] for r in EFFORT_GRID]
 MAX_E = max(val for row in EFFORT_GRID for val in row)
 MIN_E = min(val for row in EFFORT_GRID for val in row)
 
@@ -229,7 +224,7 @@ FINGER_GRID = [
 	[4, 3, 2, 1, 1],
 	[4, 3, 2, 1, 1],
 ]
-FINGER_GRID = [r + r[::-1] for r in FINGER_GRID]
+FINGER_GRID = [r + [v + 4 for v in r[::-1]] for r in FINGER_GRID]
 
 SCORE_RATES = Score(
 	sfb = 0.35,
@@ -244,7 +239,6 @@ SCORE_SCALE = Score()
 GAP_WEIGHT = 0.7
 ROW_WEIGHT = 0.8
 HAND_WEIGHT = 0.7
-SWITCH_WEIGHT = 0.5
 CENTER_WEIGHT = 2.0
 
 EXT_TEXT = {
@@ -328,6 +322,8 @@ EXT_PAREN_STAR_STYLE = {
 	'.pas', '.pp',
 }
 
+EXTENSIONS = EXT_TEXT | EXT_C_STYLE | EXT_SCRIPT_STYLE | EXT_DASH_STYLE | EXT_PERCENT_STYLE | EXT_SEMI_STYLE | EXT_PAREN_STAR_STYLE
+
 def unflatten(flat, rows=ROWS, cols=COLS):
 	return [flat[i*cols:(i+1)*cols] for i in range(rows)]
 
@@ -359,7 +355,8 @@ def sort_unique_layouts(layouts: list[Layout], size):
 		a = layout.flatten()
 		for l in result:
 			if layout == l or \
-					9 >= sum(1 for c1, c2 in zip(a, l.flatten()) if c1 != c2):
+					9 >= sum(1 for c1, c2 in zip(a, l.flatten()) if c1 != c2) or \
+					9 >= sum(1 for c1, c2 in zip(a, l.flatten_reverse()) if c1 != c2):
 				is_unique = False
 				break
 
@@ -488,21 +485,26 @@ def analyze_target_single(full_path):
 	letters = Counter()
 	bigrams = Counter()
 	trigrams = Counter()
-	pattern = re.compile('[a-z ]+', re.IGNORECASE)
+	pattern = re.compile('[a-z]+', re.IGNORECASE)
 	try:
 		with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-			text = get_text_content(full_path, f.read())
-			groups = pattern.findall(text)
-			for g in groups:
-				word = g.lower()
-				word = [ch for ch in word if 'a' <= ch <= 'z' or ch == ' ']
-				for ch in word:
-					letters[ch] += 1
-				for i in range(len(word)-1):
-					if word[i] != word[i+1]:
-						bigrams[word[i] + word[i+1]] += 1
-				for i in range(len(word)-2):
-					trigrams[word[i] + word[i+1] + word[i+2]] += 1
+			for line in f:
+				groups = pattern.findall(line)
+				for g in groups:
+					word = g.lower()
+					word = [ch for ch in word if 'a' <= ch <= 'z']
+					n = len(word)
+
+					for i in range(n):
+						c1 = word[i]
+						letters[c1] += 1
+						if i < n - 1:
+							c2 = word[i+1]
+							if c1 != c2:
+								bigrams[c1+c2] += 1
+								if i < n - 2:
+									c3 = word[i+2]
+									trigrams[c1+c2+c3] += 1
 	except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
 		print(f'Failed: {full_path} — {e}')
 
@@ -574,8 +576,6 @@ def analyze_target(result_path):
 		'https://github.com/GITenberg/Alice-s-Adventures-in-Wonderland_11',
 	]
 
-	EXTENSIONS = EXT_TEXT | EXT_C_STYLE | EXT_SCRIPT_STYLE | EXT_DASH_STYLE | EXT_PERCENT_STYLE | EXT_SEMI_STYLE | EXT_PAREN_STAR_STYLE
-
 	# Download
 	len_targets = len(targets)
 	TMP_PATH = tempfile.mkdtemp(dir=os.path.expanduser('~'), prefix='keeb')
@@ -635,42 +635,6 @@ def analyze_target(result_path):
 
 	# Store result
 	save_analyze_result(result_path)
-
-def get_text_content(full_path, original_text):
-	filename = os.path.basename(full_path)
-	_, ext = os.path.splitext(full_path)
-	ext = ext.lower()
-	is_readme = (filename.lower() == 'readme') or filename.lower().startswith('readme.')
-
-	if ext in EXT_TEXT or is_readme:
-		return original_text
-
-	comments = []
-
-	if ext in EXT_C_STYLE:
-		comments.extend(re.findall(r'/\*[\s\S]*?\*/', original_text))
-		comments.extend(re.findall(r'//.*', original_text))
-	elif ext in EXT_SCRIPT_STYLE:
-		if ext == '.py':
-			comments.extend(re.findall(r'"{3}[\s\S]*?"{3}', original_text))
-			comments.extend(re.findall(r"'{3}[\s\S]*?'{3}", original_text))
-		comments.extend(re.findall(r'#.*', original_text))
-	elif ext in EXT_DASH_STYLE:
-		if ext == '.hs':
-			comments.extend(re.findall(r'\{-[\s\S]*?-\}', original_text))
-		elif ext == '.lua':
-			comments.extend(re.findall(r'--\[\[[\s\S]*?\]\]', original_text))
-		comments.extend(re.findall(r'--.*', original_text))
-	elif ext in EXT_PERCENT_STYLE:
-		comments.extend(re.findall(r'%.*', original_text))
-	elif ext in EXT_SEMI_STYLE:
-		comments.extend(re.findall(r';.*', original_text))
-	elif ext in EXT_PAREN_STAR_STYLE:
-		comments.extend(re.findall(r'\(\*[\s\S]*?\*\)', original_text))
-	else:
-		return ""
-
-	return "\n".join(comments)
 
 def make_initial_layout() -> Layout:
 	coords = []
