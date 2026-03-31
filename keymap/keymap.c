@@ -24,7 +24,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[_HAZE] = LAYOUT(
 			KC_K,    KC_C,    KC_G,    KC_H,    KC_Q,                      _______, KC_M,    KC_A,    KC_P,    KC_Y,
 			KC_F,    KC_I,    KC_O,    KC_N,    KC_J,                      _______, KC_R,    KC_E,    KC_T,    KC_S,
-			KC_W,    KC_B,    KC_X,    KC_L,    LANG1,   _______, _______, LANG2,   KC_D,    KC_U,    KC_V,    KC_Z,
+			KC_W,    KC_B,    KC_X,    KC_L,    LANG1,   _______, _______, LANG2,   KC_D,    KC_U,    KC_Z,    KC_V,
 			OS_LGUI, OS_LCTL, OS_LALT, KC_BSPC, LOWER,   _______, _______, RAISE,   OS_RSFT, OS_RALT, OS_RCTL, OS_RGUI
 			),
 
@@ -43,9 +43,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 			),
 
 	[_RAISE] = LAYOUT(
-			KC_LBRC, KC_LCBR, KC_RCBR, KC_RBRC, KC_DLR,                    KC_CIRC, KC_COLN, KC_QUOT, KC_DQT,  KC_PERC,
-			KC_DOT,  KC_LPRN, KC_RPRN, KC_SCLN, KC_AMPR,                   KC_PIPE, KC_ESC,  KC_COMM, KC_UNDS, KC_ENT,
-			KC_LT,   KC_PLUS, KC_MINS, KC_GT,   KC_EXLM, _______, _______, KC_QUES, KC_EQL,  KC_SLSH, KC_ASTR, KC_HASH,
+			KC_LBRC, KC_LCBR, KC_RCBR, KC_RBRC, KC_DLR,                    KC_CIRC, KC_HASH, KC_QUOT, KC_DQT,  KC_PERC,
+			KC_COLN, KC_LPRN, KC_RPRN, KC_SCLN, KC_AMPR,                   KC_PIPE, KC_UNDS, KC_COMM, KC_DOT,  KC_ESC,
+			KC_LT,   KC_PLUS, KC_MINS, KC_GT,   KC_EXLM, _______, _______, KC_QUES, KC_EQL,  KC_SLSH, KC_ASTR, KC_ENT,
 			_______, _______, _______, KC_DEL,  TABADJ,  _______, _______, _______, _______, _______, _______, _______
 			),
 
@@ -74,8 +74,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 const uint16_t PROGMEM grv_combo[] = {KC_QUOT, KC_DQT, COMBO_END};
-const uint16_t PROGMEM at_combo[] = {KC_QUOT, KC_UNDS, COMBO_END};
-const uint16_t PROGMEM zero_combo[] = {KC_COMM, KC_UNDS, COMBO_END};
+const uint16_t PROGMEM at_combo[] = {KC_QUOT, KC_DOT, COMBO_END};
+const uint16_t PROGMEM zero_combo[] = {KC_COMM, KC_DOT, COMBO_END};
 const uint16_t PROGMEM one_combo[] = {KC_COMM, KC_ASTR, COMBO_END};
 const uint16_t PROGMEM tild_combo[] = {KC_PLUS, KC_MINS, COMBO_END};
 const uint16_t PROGMEM bsls_combo[] = {KC_SLSH, KC_ASTR, COMBO_END};

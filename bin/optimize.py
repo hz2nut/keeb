@@ -227,17 +227,17 @@ FINGER_GRID = [
 FINGER_GRID = [r + [v + 4 for v in r[::-1]] for r in FINGER_GRID]
 
 SCORE_RATES = Score(
-	sfb = 0.35,
+	sfb = 0.30,
 	scissors = 0.30,
-	rolling = 0.25,
+	rolling = 0.30,
 	effort = 0.10,
 )
 SCORE_MEDIAN = Score()
 SCORE_SCALE = Score()
 
 
-GAP_WEIGHT = 0.7
-ROW_WEIGHT = 0.8
+GAP_WEIGHT = 0.8
+ROW_WEIGHT = 0.9
 HAND_WEIGHT = 0.7
 CENTER_WEIGHT = 2.0
 

@@ -2,6 +2,6 @@
 
 KEEB_PATH=$HOME/.keeb
 pushd $KEEB_PATH
-vim
+nvim
 popd
 
