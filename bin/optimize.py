@@ -86,7 +86,9 @@ class Layout:
 						self.left_usage += l
 					else:
 						self.right_usage += l
-
+		total_usage = self.left_usage + self.right_usage
+		balance = abs(self.left_usage - self.right_usage) / total_usage
+		self.score.effort *= 1 + max(0, balance - 0.1) * 10
 
 		stats = {ch: (r, c, _finger_grid[r][c], _effort_grid[r][c], c<5, 4<=c<=5) for r in range(ROWS) for c in range(COLS) if (ch := self.letters[r][c])}
 
@@ -105,7 +107,7 @@ class Layout:
 
 			# sfb
 			if f1 == f2:
-				weight = [4.0, 2.0, 1.0][i]
+				weight = 1.0
 				weight *= CENTER_WEIGHT if is_center else 1.0
 				weight *= (ROW_WEIGHT ** -row_delta)
 				sfb += count * weight * (e1+e2)
@@ -145,8 +147,7 @@ class Layout:
 			# sfs
 			if f1 == f3 and f1 != f2:
 				weight = CENTER_WEIGHT if (4<=c1<=5 or 4<=c3<=5) else 1.0
-				weight *= (ROW_WEIGHT ** -abs(r1-r3))
-				weight *= HAND_WEIGHT if h1 != h2 else 1.0
+				weight *= (ROW_WEIGHT ** abs(r1-r3))
 				sfb += count * weight * (e1+e3)
 
 			# rolling
@@ -674,7 +675,7 @@ def crossover(parents: list[Layout], blank=''):
 		if target == blank: continue
 		if target in child: continue
 		for j in range(length):
-			if child[j] is blank:
+			if child[j] == blank:
 				child[j] = target
 				break
 
