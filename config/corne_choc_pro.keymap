@@ -254,7 +254,7 @@
          bindings = <
             &kp SQT  &kp DQT  &kp QMARK &kp EXCL &kp PRCNT &none &none &none &none &none &none &none
             &to SYM1 &kp DOT  &kp COLON &kp SEMI &kp PIPE  &none &none &none &none &none &none &none
-            &kp RBRC &kp RBKT &kp RPAR  &kp GT   &kp AT                &none &none &none &none &none
+            &kp RBRC &kp RBKT &kp RPAR  &kp GT   &kp TILDE             &none &none &none &none &none
             &none &none &none &none &none &none
             >;
       };
