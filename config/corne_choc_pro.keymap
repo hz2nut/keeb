@@ -238,7 +238,7 @@
       sym1_layer {
          display-name = "SYM1";
          bindings = <
-            &kp STAR &kp FLSH &kp MINUS &kp PLUS  &kp HASH &none &none &none &none &none &none &none
+            &kp STAR &kp FSLH &kp MINUS &kp PLUS  &kp HASH &none &none &none &none &none &none &none
             &sl SYM2 &kp EQL  &kp UNDER &kp COMMA &kp AMPS &none &none &none &none &none &none &none
             &kp LBRC &kp LBKT &kp LPAR  &kp LT    &kp AT               &none &none &none &none &none
             &none &none &sl NUMS &none &none &none
