@@ -11,7 +11,5 @@ function link_file {
 mkdir -p ~/.local/bin
 mkdir -p ~/.vim/plugin
 
-link_file bin/optimize.py ~/.local/bin/keeboptimize
 link_file bin/edit.sh ~/.local/bin/keebedit
 link_file bin/build.sh ~/.local/bin/keebuild
-link_file mappings.vim ~/.vim/plugin/keebmappings.vim
