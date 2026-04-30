@@ -138,6 +138,11 @@
             bindings = <&kp GRAVE>;
             layers = <7>;
         };
+        combo_bspc {
+            key-positions = <2 3>;
+            bindings = <&kp BSPC>;
+            layers = <0 1 2 3 6 7>;
+        };
         combo_lshft {
             key-positions = <13 14>;
             bindings = <&sk LSHFT>;
