@@ -79,6 +79,33 @@
             ;
     };
 
+    left_only_layout: left_only_layout {
+        compatible = "zmk,physical-layout";
+        display-name = "Left Only";
+        keys  //                     w   h    x    y     rot    rx    ry
+            = <&key_physical_attrs 100 100    0   37       0     0     0>
+            , <&key_physical_attrs 100 100  100   12       0     0     0>
+            , <&key_physical_attrs 100 100  200    0       0     0     0>
+            , <&key_physical_attrs 100 100  300   12       0     0     0>
+            , <&key_physical_attrs 100 100  400   24       0     0     0>
+            , <&key_physical_attrs 100 100  500   74       0     0     0>
+            , <&key_physical_attrs 100 100    0  137       0     0     0>
+            , <&key_physical_attrs 100 100  100  112       0     0     0>
+            , <&key_physical_attrs 100 100  200  100       0     0     0>
+            , <&key_physical_attrs 100 100  300  112       0     0     0>
+            , <&key_physical_attrs 100 100  400  124       0     0     0>
+            , <&key_physical_attrs 100 100  500  174       0     0     0>
+            , <&key_physical_attrs 100 100    0  237       0     0     0>
+            , <&key_physical_attrs 100 100  100  212       0     0     0>
+            , <&key_physical_attrs 100 100  200  200       0     0     0>
+            , <&key_physical_attrs 100 100  300  212       0     0     0>
+            , <&key_physical_attrs 100 100  400  224       0     0     0>
+            , <&key_physical_attrs 100 100  250  312       0     0     0>
+            , <&key_physical_attrs 100 100  350  312    1200   350   412>
+            , <&key_physical_attrs 100 150  448  283    2400   448   433>
+            ;
+    };
+
     five_col_layout: five_col_layout {
         compatible = "zmk,physical-layout";
         display-name = "5-Col Layout";

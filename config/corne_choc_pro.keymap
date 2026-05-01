@@ -20,7 +20,7 @@
 
 / {
    chosen {
-      zmk,physical-layout = &five_col_layout;
+      zmk,physical-layout = &left_only_layout;
    };
 };
 
@@ -59,72 +59,72 @@
    combos {
         compatible = "zmk,combos";
         combo_f1 {
-            key-positions = <16 25>;
+            key-positions = <10 13>;
             bindings = <&kp F1>;
             layers = <8>;
         };
         combo_f2 {
-            key-positions = <16 26>;
+            key-positions = <10 14>;
             bindings = <&kp F2>;
             layers = <8>;
         };
         combo_f3 {
-            key-positions = <16 27>;
+            key-positions = <10 15>;
             bindings = <&kp F3>;
             layers = <8>;
         };
         combo_f4 {
-            key-positions = <16 13>;
+            key-positions = <10 7>;
             bindings = <&kp F4>;
             layers = <8>;
         };
         combo_f5 {
-            key-positions = <16 14>;
+            key-positions = <10 8>;
             bindings = <&kp F5>;
             layers = <8>;
         };
         combo_f6 {
-            key-positions = <16 15>;
+            key-positions = <10 9>;
             bindings = <&kp F6>;
             layers = <8>;
         };
         combo_f7 {
-            key-positions = <16 1>;
+            key-positions = <10 1>;
             bindings = <&kp F7>;
             layers = <8>;
         };
         combo_f8 {
-            key-positions = <16 2>;
+            key-positions = <10 2>;
             bindings = <&kp F8>;
             layers = <8>;
         };
         combo_f9 {
-            key-positions = <16 3>;
+            key-positions = <10 3>;
             bindings = <&kp F9>;
             layers = <8>;
         };
         combo_f10 {
-            key-positions = <16 24>;
+            key-positions = <10 12>;
             bindings = <&kp F10>;
             layers = <8>;
         };
         combo_f11 {
-            key-positions = <16 12>;
+            key-positions = <10 6>;
             bindings = <&kp F11>;
             layers = <8>;
         };
         combo_f12 {
-            key-positions = <16 0>;
+            key-positions = <10 0>;
             bindings = <&kp F12>;
             layers = <8>;
         };
         combo_dllr {
-            key-positions = <24 25>;
+            key-positions = <12 13>;
             bindings = <&kp DLLR>;
             layers = <6>;
         };
         combo_caret {
-            key-positions = <24 25>;
+            key-positions = <12 13>;
             bindings = <&kp CARET>;
             layers = <7>;
         };
@@ -144,7 +144,7 @@
             layers = <0 1 2 3 6 7>;
         };
         combo_lshft {
-            key-positions = <13 14>;
+            key-positions = <7 8>;
             bindings = <&sk LSHFT>;
             layers = <0 1 2 3 6 7>;
         };
@@ -154,27 +154,27 @@
             layers = <0 1 2 3 6 7>;
         };
         combo_tab {
-            key-positions = <25 26>;
+            key-positions = <13 14>;
             bindings = <&kp TAB>;
             layers = <0 1 2 3 6 7>;
         };
         combo_esc {
-            key-positions = <14 15>;
+            key-positions = <8 9>;
             bindings = <&kp ESC>;
             layers = <0 1 2 3 6 7>;
         };
         combo_ret {
-            key-positions = <26 27>;
+            key-positions = <14 15>;
             bindings = <&kp RET>;
             layers = <0 1 2 3 6 7>;
         };
         combo_lcmd {
-            key-positions = <15 16>;
+            key-positions = <9 10>;
             bindings = <&sk LCMD>;
             layers = <0 1 2 3 6 7>;
         };
         combo_lctrl {
-            key-positions = <27 28>;
+            key-positions = <15 16>;
             bindings = <&sk LCTRL>;
             layers = <0 1 2 3 6 7>;
         };
@@ -189,82 +189,82 @@
       base1_layer {
          display-name = "BASE1";
          bindings = <
-            &kp F     &kp D &kp I &kp S &kp J &none &none &none &none &none &none &none
-            &kp SPACE &kp T &kp E &kp N &kp Q &none &none &none &none &none &none &none
-            &kp U     &kp C &kp O &kp R &kp Z               &none &none &none &none &none
-            &sl ARROWS &sl BASE2 &sl SYM1 &none &none &none
+            &kp F     &kp D &kp I &kp S &kp J &none
+            &kp SPACE &kp T &kp E &kp N &kp Q &none
+            &kp U     &kp C &kp O &kp R &kp Z
+            &sl ARROWS &sl BASE2 &sl SYM1
             >;
       };
       base2_layer {
          display-name = "BASE2";
          bindings = <
-            &kp V &kp G &kp Y &kp X &none       &none &none &none &none &none &none &none
-            &kp P &kp M &kp A &kp L &lang1 KOR1 &none &none &none &none &none &none &none
-            &kp W &kp B &kp K &kp H &lang2 KOR1             &none &none &none &none &none
-            &trans &to BASE1 &trans &none &none &none
+            &kp V &kp G &kp Y &kp X &none       &none
+            &kp P &kp M &kp A &kp L &lang1 KOR1 &none
+            &kp W &kp B &kp K &kp H &lang2 KOR1
+            &trans &to BASE1 &trans
             >;
       };
       kor1_layer {
          display-name = "KOR1";
          bindings = <
-            &kp C     &kp E &kp I &kp Q &kp Z &none &none &none &none &none &none &none
-            &kp SPACE &kp S &kp R &kp D &kp V &none &none &none &none &none &none &none
-            &kp G     &kp A &kp W &kp F &kp X               &none &none &none &none &none
-            &sl ARROWS &sl KOR2 &sl SYM1 &none &none &none
+            &kp C     &kp E &kp I &kp Q &kp Z &none
+            &kp SPACE &kp S &kp R &kp D &kp V &none
+            &kp G     &kp A &kp W &kp F &kp X
+            &sl ARROWS &sl KOR2 &sl SYM1
             >;
       };
       kor2_layer {
          display-name = "KOR2";
          bindings = <
-            &kp B &kp P &kp N &kp I &none        &none &none &none &none &none &none &none
-            &kp J &kp M &kp L &kp K &lang1 BASE1 &none &none &none &none &none &none &none
-            &kp Y &kp O &kp H &kp U &lang2 BASE1             &none &none &none &none &none
-            &trans &to KOR1 &trans &none &none &none
+            &kp B &kp P &kp N &kp I &none        &none
+            &kp J &kp M &kp L &kp K &lang1 BASE1 &none
+            &kp Y &kp O &kp H &kp U &lang2 BASE1
+            &trans &to KOR1 &trans
             >;
       };
       arrows_layer {
          display-name = "ARROWS";
          bindings = <
-            &kp HOME &kp PG_DN &kp PG_UP &kp END   &none &none &none &none &none &none &none &none
-            &kp LEFT &kp DOWN  &kp UP    &kp RIGHT &none &none &none &none &none &none &none &none
-            &sl FUNS &kp DEL   &kp LC(B) &kp CAPS  &kp INS           &none &none &none &none &none
-            &none &none &none &none &none &none
+            &kp HOME &kp PG_DN &kp PG_UP &kp END   &none &none
+            &kp LEFT &kp DOWN  &kp UP    &kp RIGHT &none &none
+            &sl FUNS &kp DEL   &kp LC(B) &kp CAPS  &kp INS
+            &none &none &none
             >;
       };
       funs_layer {
          display-name = "FUNS";
          bindings = <
-            &bt BT_SEL 3 &bt BT_SEL 2 &bt BT_SEL 1 &bt BT_SEL 0 &bt BT_CLR &none &none &none &none &none &none &none
-            &kp C_PREV   &kp C_VOL_DN &kp C_VOL_UP &kp C_NEXT   &none      &none &none &none &none &none &none &none
-            &none        &kp C_BRI_DN &kp C_BRI_UP &kp C_PP     &none                  &none &none &none &none &none
-            &none &none &none &none &none &none
+            &bt BT_SEL 3 &bt BT_SEL 2 &bt BT_SEL 1 &bt BT_SEL 0 &bt BT_CLR &none
+            &kp C_PREV   &kp C_VOL_DN &kp C_VOL_UP &kp C_NEXT   &none      &none
+            &none        &kp C_BRI_DN &kp C_BRI_UP &kp C_PP     &none
+            &none &none &none
             >;
       };
       sym1_layer {
          display-name = "SYM1";
          bindings = <
-            &kp STAR &kp FSLH &kp MINUS &kp PLUS  &kp HASH &none &none &none &none &none &none &none
-            &sl SYM2 &kp EQL  &kp UNDER &kp COMMA &kp AMPS &none &none &none &none &none &none &none
-            &kp LBRC &kp LBKT &kp LPAR  &kp LT    &kp AT               &none &none &none &none &none
-            &none &none &sl NUMS &none &none &none
+            &kp STAR &kp FSLH &kp MINUS &kp PLUS  &kp HASH &none
+            &sl SYM2 &kp EQL  &kp UNDER &kp COMMA &kp AMPS &none
+            &kp LBRC &kp LBKT &kp LPAR  &kp LT    &kp AT
+            &none &none &sl NUMS
             >;
       };
       sym2_layer {
          display-name = "SYM2";
          bindings = <
-            &kp SQT  &kp DQT  &kp QMARK &kp EXCL &kp PRCNT &none &none &none &none &none &none &none
-            &to SYM1 &kp DOT  &kp COLON &kp SEMI &kp PIPE  &none &none &none &none &none &none &none
-            &kp RBRC &kp RBKT &kp RPAR  &kp GT   &kp TILDE             &none &none &none &none &none
-            &none &none &none &none &none &none
+            &kp SQT  &kp DQT  &kp QMARK &kp EXCL &kp PRCNT &none
+            &to SYM1 &kp DOT  &kp COLON &kp SEMI &kp PIPE  &none
+            &kp RBRC &kp RBKT &kp RPAR  &kp GT   &kp TILDE
+            &none &none &none
             >;
       };
       nums_layer {
          display-name = "NUMS";
          bindings = <
-            &kp MINUS &kp N7 &kp N8 &kp N9 &kp FSLH &none &none &none &none &none &none &none
-            &kp PLUS  &kp N4 &kp N5 &kp N6 &kp STAR &none &none &none &none &none &none &none
-            &kp N0    &kp N1 &kp N2 &kp N3 &kp DOT               &none &none &none &none &none
-            &kp DOT &none &none &none &none &none
+            &kp MINUS &kp N7 &kp N8 &kp N9 &kp FSLH &none
+            &kp PLUS  &kp N4 &kp N5 &kp N6 &kp STAR &none
+            &kp N0    &kp N1 &kp N2 &kp N3 &kp DOT
+            &kp DOT &none &none
             >;
       };
    };
