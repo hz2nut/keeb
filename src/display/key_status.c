@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <string.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zmk/display.h>
@@ -88,49 +89,80 @@ static void keycode_to_str(uint16_t page, uint32_t kc, uint8_t mods, char *buf, 
 	}
 }
 
-static void draw_top(struct zmk_widget_key_status *w) {
-	lv_canvas_fill_bg(w->canvas_top, lv_color_black(), LV_OPA_COVER);
+/* ------------------------------------------------------------------ */
+/*  Drawing helpers                                                     */
+/* ------------------------------------------------------------------ */
 
-	lv_draw_label_dsc_t label_dsc;
-	lv_draw_label_dsc_init(&label_dsc);
-	label_dsc.color = lv_color_white();
-	label_dsc.font = &lv_font_montserrat_14;
+static void canvas_draw_str(lv_obj_t *canvas, lv_coord_t x, lv_coord_t y, lv_coord_t max_w,
+                             lv_color_t color, const lv_font_t *font, lv_text_align_t align,
+                             const char *txt) {
+	lv_layer_t layer;
+	lv_canvas_init_layer(canvas, &layer);
+
+	lv_draw_label_dsc_t dsc;
+	lv_draw_label_dsc_init(&dsc);
+	dsc.color = color;
+	dsc.font = font;
+	dsc.align = align;
+	dsc.text = txt;
+
+	lv_area_t coords = {x, y, x + max_w - 1, y + CANVAS_SIZE - 1};
+	lv_draw_label(&layer, &dsc, &coords);
+
+	lv_canvas_finish_layer(canvas, &layer);
+}
+
+static void rotate_canvas(lv_obj_t *canvas) {
+	lv_draw_buf_t *buf = lv_canvas_get_draw_buf(canvas);
+	static uint8_t copy[CANVAS_BUF_SIZE];
+	memcpy(copy, buf->data, sizeof(copy));
+	uint32_t stride = lv_draw_buf_width_to_stride(CANVAS_SIZE, CANVAS_COLOR_FORMAT);
+	lv_draw_sw_rotate(copy, buf->data, CANVAS_SIZE, CANVAS_SIZE, stride, stride,
+	                  LV_DISPLAY_ROTATION_270, CANVAS_COLOR_FORMAT);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Widget draw functions                                               */
+/* ------------------------------------------------------------------ */
+
+static void draw_top(struct zmk_widget_key_status *w) {
+	lv_obj_t *canvas = lv_obj_get_child(w->obj, 0);
+	lv_canvas_fill_bg(canvas, lv_color_black(), LV_OPA_COVER);
 
 	char bat_str[8];
 	snprintf(bat_str, sizeof(bat_str), "%d%%", active_state.battery);
 
-	// 회전 후 배터리는 왼쪽 위 (y=42 언저리가 왼쪽 벽)
-	lv_canvas_draw_text(w->canvas_top, 0, 40, 40, &label_dsc, bat_str);
-	// 회전 후 커넥션(OUT)은 오른쪽 위 (y=0 언저리가 오른쪽 벽)
-	lv_canvas_draw_text(w->canvas_top, 0, 0, 40, &label_dsc, active_state.conn);
+	canvas_draw_str(canvas, 0, 2, 34, lv_color_white(),
+	                &lv_font_montserrat_14, LV_TEXT_ALIGN_LEFT, active_state.conn);
+	canvas_draw_str(canvas, 34, 2, 34, lv_color_white(),
+	                &lv_font_montserrat_14, LV_TEXT_ALIGN_RIGHT, bat_str);
+	rotate_canvas(canvas);
 }
 
 static void draw_mid(struct zmk_widget_key_status *w) {
-	lv_canvas_fill_bg(w->canvas_mid, lv_color_black(), LV_OPA_COVER);
+	lv_obj_t *canvas = lv_obj_get_child(w->obj, 1);
+	lv_canvas_fill_bg(canvas, lv_color_black(), LV_OPA_COVER);
 
-	lv_draw_label_dsc_t label_dsc;
-	lv_draw_label_dsc_init(&label_dsc);
-	label_dsc.color = lv_color_white();
-	label_dsc.font = (strlen(active_state.key) == 1) ? &lv_font_montserrat_26 : &lv_font_montserrat_16;
+	bool single = (strlen(active_state.key) == 1);
+	const lv_font_t *font = single ? &lv_font_montserrat_26 : &lv_font_montserrat_16;
+	lv_coord_t y_off = single ? 21 : 26;
 
-	// 중앙 캔버스에 키보드 입력 문자 렌더링
-	lv_canvas_draw_text(w->canvas_mid, 24, 15, 68, &label_dsc, active_state.key);
+	canvas_draw_str(canvas, 0, y_off, CANVAS_SIZE, lv_color_white(),
+	                font, LV_TEXT_ALIGN_CENTER, active_state.key);
+	rotate_canvas(canvas);
 }
 
 static void draw_btm(struct zmk_widget_key_status *w) {
-	lv_canvas_fill_bg(w->canvas_btm, lv_color_black(), LV_OPA_COVER);
+	lv_obj_t *canvas = lv_obj_get_child(w->obj, 2);
+	lv_canvas_fill_bg(canvas, lv_color_black(), LV_OPA_COVER);
 
-	lv_draw_label_dsc_t label_dsc;
-	lv_draw_label_dsc_init(&label_dsc);
-	label_dsc.color = lv_color_white();
-	label_dsc.font = &lv_font_montserrat_14;
-
-	// 하단 캔버스에 레이어 상태 렌더링
-	lv_canvas_draw_text(w->canvas_btm, 40, 10, 68, &label_dsc, active_state.layer);
+	canvas_draw_str(canvas, 0, 5, CANVAS_SIZE, lv_color_white(),
+	                &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER, active_state.layer);
+	rotate_canvas(canvas);
 }
 
 /* ------------------------------------------------------------------ */
-/*  Listeners (이벤트 감지 시 캐시 업데이트 및 해당 캔버스만 Redraw)    */
+/*  Event listeners                                                     */
 /* ------------------------------------------------------------------ */
 
 struct key_state { char key_str[8]; };
@@ -142,7 +174,9 @@ static void key_update_cb(struct key_state state) {
 static struct key_state key_get_state(const zmk_event_t *eh) {
 	const struct zmk_keycode_state_changed *ev = as_zmk_keycode_state_changed(eh);
 	if (ev != NULL && ev->state && !is_mod(ev->usage_page, ev->keycode)) {
-		keycode_to_str(ev->usage_page, ev->keycode, ev->implicit_modifiers | ev->explicit_modifiers, last_key, sizeof(last_key));
+		keycode_to_str(ev->usage_page, ev->keycode,
+		               ev->implicit_modifiers | ev->explicit_modifiers,
+		               last_key, sizeof(last_key));
 	}
 	struct key_state s;
 	strncpy(s.key_str, last_key, sizeof(s.key_str));
@@ -163,7 +197,10 @@ static void layer_update_cb(struct layer_state state) {
 }
 static struct layer_state layer_get_state(const zmk_event_t *eh) {
 	zmk_keymap_layer_index_t idx = zmk_keymap_highest_layer_active();
-	return (struct layer_state){ .index = idx, .label = zmk_keymap_layer_name(zmk_keymap_layer_index_to_id(idx)) };
+	return (struct layer_state){
+		.index = idx,
+		.label = zmk_keymap_layer_name(zmk_keymap_layer_index_to_id(idx))
+	};
 }
 ZMK_DISPLAY_WIDGET_LISTENER(widget_layer, struct layer_state, layer_update_cb, layer_get_state)
 ZMK_SUBSCRIPTION(widget_layer, zmk_layer_state_changed);
@@ -182,9 +219,13 @@ ZMK_SUBSCRIPTION(widget_battery, zmk_battery_state_changed);
 
 struct conn_state { enum zmk_transport transport; uint8_t ble_profile; bool ble_connected; };
 static void conn_update_cb(struct conn_state state) {
-	if (state.transport == ZMK_TRANSPORT_USB) { snprintf(active_state.conn, sizeof(active_state.conn), "U"); }
-	else if (state.ble_connected) { snprintf(active_state.conn, sizeof(active_state.conn), "%d", state.ble_profile + 1); }
-	else { snprintf(active_state.conn, sizeof(active_state.conn), "X"); }
+	if (state.transport == ZMK_TRANSPORT_USB) {
+		snprintf(active_state.conn, sizeof(active_state.conn), "U");
+	} else if (state.ble_connected) {
+		snprintf(active_state.conn, sizeof(active_state.conn), "%d", state.ble_profile + 1);
+	} else {
+		snprintf(active_state.conn, sizeof(active_state.conn), "X");
+	}
 	struct zmk_widget_key_status *w;
 	SYS_SLIST_FOR_EACH_CONTAINER(&widgets, w, node) { draw_top(w); }
 }
@@ -203,47 +244,37 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_conn, struct conn_state, conn_update_cb, conn
 ZMK_SUBSCRIPTION(widget_conn, zmk_endpoint_changed);
 
 /* ------------------------------------------------------------------ */
-/*  Widget Init (3분할 캔버스 생성 및 회전)                             */
+/*  Widget init                                                         */
 /* ------------------------------------------------------------------ */
 
 int zmk_widget_key_status_init(struct zmk_widget_key_status *widget, lv_obj_t *parent) {
-	// 디스플레이 영역을 68x160으로 명시
-	lv_obj_set_size(parent, 68, 160);
+	widget->obj = lv_obj_create(parent);
+	lv_obj_set_size(widget->obj, 160, 68);
 
-	// 상단 캔버스
-	widget->canvas_top = lv_canvas_create(parent);
-	lv_canvas_set_buffer(widget->canvas_top, widget->cbuf_top, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_INDEXED_1BIT);
-	lv_canvas_set_palette(widget->canvas_top, 0, lv_color_black());
-	lv_canvas_set_palette(widget->canvas_top, 1, lv_color_white());
-	lv_img_set_pivot(widget->canvas_top, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
-	lv_img_set_angle(widget->canvas_top, 900); // 90도 회전
-	lv_obj_align(widget->canvas_top, LV_ALIGN_TOP_MID, 0, 0);
+	/* portrait top = landscape rightmost */
+	lv_obj_t *canvas_top = lv_canvas_create(widget->obj);
+	lv_obj_align(canvas_top, LV_ALIGN_TOP_RIGHT, 0, 0);
+	lv_canvas_set_buffer(canvas_top, widget->cbuf_top, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
 
-	// 중앙 캔버스
-	widget->canvas_mid = lv_canvas_create(parent);
-	lv_canvas_set_buffer(widget->canvas_mid, widget->cbuf_mid, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_INDEXED_1BIT);
-	lv_canvas_set_palette(widget->canvas_mid, 0, lv_color_black());
-	lv_canvas_set_palette(widget->canvas_mid, 1, lv_color_white());
-	lv_img_set_pivot(widget->canvas_mid, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
-	lv_img_set_angle(widget->canvas_mid, 900); // 90도 회전
-	lv_obj_align(widget->canvas_mid, LV_ALIGN_CENTER, 0, 0);
+	/* portrait middle = landscape center */
+	lv_obj_t *canvas_mid = lv_canvas_create(widget->obj);
+	lv_obj_align(canvas_mid, LV_ALIGN_TOP_LEFT, 24, 0);
+	lv_canvas_set_buffer(canvas_mid, widget->cbuf_mid, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
 
-	// 하단 캔버스
-	widget->canvas_btm = lv_canvas_create(parent);
-	lv_canvas_set_buffer(widget->canvas_btm, widget->cbuf_btm, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_INDEXED_1BIT);
-	lv_canvas_set_palette(widget->canvas_btm, 0, lv_color_black());
-	lv_canvas_set_palette(widget->canvas_btm, 1, lv_color_white());
-	lv_img_set_pivot(widget->canvas_btm, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
-	lv_img_set_angle(widget->canvas_btm, 900); // 90도 회전
-	lv_obj_align(widget->canvas_btm, LV_ALIGN_BOTTOM_MID, 0, 0);
+	/* portrait bottom = landscape leftmost (24px visible strip) */
+	lv_obj_t *canvas_btm = lv_canvas_create(widget->obj);
+	lv_obj_align(canvas_btm, LV_ALIGN_TOP_LEFT, -44, 0);
+	lv_canvas_set_buffer(canvas_btm, widget->cbuf_btm, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
 
 	sys_slist_append(&widgets, &widget->node);
-
-	// 초기 상태 그리기 트리거
 	widget_key_init();
 	widget_layer_init();
 	widget_battery_init();
 	widget_conn_init();
 
 	return 0;
+}
+
+lv_obj_t *zmk_widget_key_status_obj(struct zmk_widget_key_status *widget) {
+	return widget->obj;
 }
