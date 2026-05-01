@@ -217,25 +217,27 @@ ZMK_SUBSCRIPTION(widget_conn, zmk_endpoint_changed);
 /* ------------------------------------------------------------------ */
 
 int zmk_widget_key_status_init(struct zmk_widget_key_status *widget, lv_obj_t *parent) {
-    /* After LV_DISPLAY_ROTATION_270 the virtual canvas is 68×160 (portrait). */
-
     widget->battery_label = lv_label_create(parent);
-    lv_obj_set_style_text_font(widget->battery_label, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(widget->battery_label, &lv_font_montserrat_14, LV_PART_MAIN);
+    lv_obj_set_style_text_color(widget->battery_label, lv_color_black(), LV_PART_MAIN);
     lv_label_set_text(widget->battery_label, "---");
     lv_obj_align(widget->battery_label, LV_ALIGN_TOP_LEFT, 2, 2);
 
     widget->conn_label = lv_label_create(parent);
-    lv_obj_set_style_text_font(widget->conn_label, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(widget->conn_label, &lv_font_montserrat_14, LV_PART_MAIN);
+    lv_obj_set_style_text_color(widget->conn_label, lv_color_black(), LV_PART_MAIN);
     lv_label_set_text(widget->conn_label, "---");
     lv_obj_align(widget->conn_label, LV_ALIGN_TOP_RIGHT, -2, 2);
 
     widget->key_label = lv_label_create(parent);
-    lv_obj_set_style_text_font(widget->key_label, &lv_font_montserrat_26, 0);
-    lv_label_set_text(widget->key_label, "");
+    lv_obj_set_style_text_font(widget->key_label, &lv_font_montserrat_26, LV_PART_MAIN);
+    lv_obj_set_style_text_color(widget->key_label, lv_color_black(), LV_PART_MAIN);
+    lv_label_set_text(widget->key_label, "---");
     lv_obj_align(widget->key_label, LV_ALIGN_CENTER, 0, 0);
 
     widget->layer_label = lv_label_create(parent);
-    lv_obj_set_style_text_font(widget->layer_label, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(widget->layer_label, &lv_font_montserrat_14, LV_PART_MAIN);
+    lv_obj_set_style_text_color(widget->layer_label, lv_color_black(), LV_PART_MAIN);
     lv_label_set_text(widget->layer_label, "---");
     lv_obj_align(widget->layer_label, LV_ALIGN_BOTTOM_MID, 0, -2);
 
