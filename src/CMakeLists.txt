@@ -4,5 +4,8 @@ if(CONFIG_ZMK_DISPLAY)
     ${CMAKE_CURRENT_LIST_DIR}/display/key_status.c
     ${CMAKE_CURRENT_LIST_DIR}/display/status_screen.c
   )
-  zephyr_library_include_directories(${CMAKE_CURRENT_LIST_DIR}/display)
+  zephyr_library_include_directories(
+    ${CMAKE_CURRENT_LIST_DIR}/display
+    ${APPLICATION_SOURCE_DIR}/include
+  )
 endif()
