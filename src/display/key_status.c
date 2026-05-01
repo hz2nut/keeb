@@ -180,9 +180,9 @@ struct conn_state {
 static void conn_update_cb(struct conn_state state) {
     char text[8];
     if (state.transport == ZMK_TRANSPORT_USB) {
-        snprintf(text, sizeof(text), "USB");
+        snprintf(text, sizeof(text), "U");
     } else if (state.ble_connected) {
-        snprintf(text, sizeof(text), "BT:%d", state.ble_profile + 1);
+        snprintf(text, sizeof(text), "%d", state.ble_profile + 1);
     } else {
         snprintf(text, sizeof(text), "X");
     }
