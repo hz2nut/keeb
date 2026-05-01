@@ -96,29 +96,25 @@ static void keycode_to_str(uint16_t page, uint32_t kc, uint8_t mods, char *buf, 
 static void canvas_draw_str(lv_obj_t *canvas, lv_coord_t x, lv_coord_t y, lv_coord_t max_w,
                              lv_color_t color, const lv_font_t *font, lv_text_align_t align,
                              const char *txt) {
-	lv_layer_t layer;
-	lv_canvas_init_layer(canvas, &layer);
-
 	lv_draw_label_dsc_t dsc;
 	lv_draw_label_dsc_init(&dsc);
 	dsc.color = color;
 	dsc.font = font;
 	dsc.align = align;
-	dsc.text = txt;
-
-	lv_area_t coords = {x, y, x + max_w - 1, y + CANVAS_SIZE - 1};
-	lv_draw_label(&layer, &dsc, &coords);
-
-	lv_canvas_finish_layer(canvas, &layer);
+	lv_canvas_draw_text(canvas, x, y, max_w, &dsc, txt);
 }
 
-static void rotate_canvas(lv_obj_t *canvas) {
-	lv_draw_buf_t *buf = lv_canvas_get_draw_buf(canvas);
-	static uint8_t copy[CANVAS_BUF_SIZE];
-	memcpy(copy, buf->data, sizeof(copy));
-	uint32_t stride = lv_draw_buf_width_to_stride(CANVAS_SIZE, CANVAS_COLOR_FORMAT);
-	lv_draw_sw_rotate(copy, buf->data, CANVAS_SIZE, CANVAS_SIZE, stride, stride,
-	                  LV_DISPLAY_ROTATION_270, CANVAS_COLOR_FORMAT);
+static void rotate_canvas(lv_obj_t *canvas, lv_color_t cbuf[]) {
+	static lv_color_t cbuf_tmp[CANVAS_SIZE * CANVAS_SIZE];
+	memcpy(cbuf_tmp, cbuf, sizeof(cbuf_tmp));
+	lv_img_dsc_t img;
+	img.data = (void *)cbuf_tmp;
+	img.header.cf = LV_IMG_CF_TRUE_COLOR;
+	img.header.w = CANVAS_SIZE;
+	img.header.h = CANVAS_SIZE;
+	lv_canvas_fill_bg(canvas, lv_color_black(), LV_OPA_COVER);
+	lv_canvas_transform(canvas, &img, 900, LV_IMG_ZOOM_NONE, -1, 0,
+	                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, true);
 }
 
 /* ------------------------------------------------------------------ */
@@ -136,7 +132,7 @@ static void draw_top(struct zmk_widget_key_status *w) {
 	                &lv_font_montserrat_14, LV_TEXT_ALIGN_LEFT, active_state.conn);
 	canvas_draw_str(canvas, 34, 2, 34, lv_color_white(),
 	                &lv_font_montserrat_14, LV_TEXT_ALIGN_RIGHT, bat_str);
-	rotate_canvas(canvas);
+	rotate_canvas(canvas, w->cbuf_top);
 }
 
 static void draw_mid(struct zmk_widget_key_status *w) {
@@ -149,7 +145,7 @@ static void draw_mid(struct zmk_widget_key_status *w) {
 
 	canvas_draw_str(canvas, 0, y_off, CANVAS_SIZE, lv_color_white(),
 	                font, LV_TEXT_ALIGN_CENTER, active_state.key);
-	rotate_canvas(canvas);
+	rotate_canvas(canvas, w->cbuf_mid);
 }
 
 static void draw_btm(struct zmk_widget_key_status *w) {
@@ -158,7 +154,7 @@ static void draw_btm(struct zmk_widget_key_status *w) {
 
 	canvas_draw_str(canvas, 0, 5, CANVAS_SIZE, lv_color_white(),
 	                &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER, active_state.layer);
-	rotate_canvas(canvas);
+	rotate_canvas(canvas, w->cbuf_btm);
 }
 
 /* ------------------------------------------------------------------ */
@@ -251,20 +247,20 @@ int zmk_widget_key_status_init(struct zmk_widget_key_status *widget, lv_obj_t *p
 	widget->obj = lv_obj_create(parent);
 	lv_obj_set_size(widget->obj, 160, 68);
 
-	/* portrait top = landscape rightmost */
 	lv_obj_t *canvas_top = lv_canvas_create(widget->obj);
 	lv_obj_align(canvas_top, LV_ALIGN_TOP_RIGHT, 0, 0);
-	lv_canvas_set_buffer(canvas_top, widget->cbuf_top, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
+	lv_canvas_set_buffer(canvas_top, widget->cbuf_top, CANVAS_SIZE, CANVAS_SIZE,
+	                     LV_IMG_CF_TRUE_COLOR);
 
-	/* portrait middle = landscape center */
 	lv_obj_t *canvas_mid = lv_canvas_create(widget->obj);
 	lv_obj_align(canvas_mid, LV_ALIGN_TOP_LEFT, 24, 0);
-	lv_canvas_set_buffer(canvas_mid, widget->cbuf_mid, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
+	lv_canvas_set_buffer(canvas_mid, widget->cbuf_mid, CANVAS_SIZE, CANVAS_SIZE,
+	                     LV_IMG_CF_TRUE_COLOR);
 
-	/* portrait bottom = landscape leftmost (24px visible strip) */
 	lv_obj_t *canvas_btm = lv_canvas_create(widget->obj);
 	lv_obj_align(canvas_btm, LV_ALIGN_TOP_LEFT, -44, 0);
-	lv_canvas_set_buffer(canvas_btm, widget->cbuf_btm, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
+	lv_canvas_set_buffer(canvas_btm, widget->cbuf_btm, CANVAS_SIZE, CANVAS_SIZE,
+	                     LV_IMG_CF_TRUE_COLOR);
 
 	sys_slist_append(&widgets, &widget->node);
 	widget_key_init();
