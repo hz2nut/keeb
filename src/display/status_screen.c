@@ -12,7 +12,7 @@ static struct zmk_widget_key_status key_widget;
 lv_obj_t *zmk_display_status_screen(void) {
     /* Rotate virtual coordinate space to match physical portrait mounting.
      * Driver gives 160×68 landscape; after 270° rotation LVGL sees 68×160. */
-    lv_display_set_rotation(lv_display_get_default(), LV_DISPLAY_ROTATION_270);
+    lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_270);
 
     lv_obj_t *screen = lv_obj_create(NULL);
     lv_obj_set_style_bg_color(screen, lv_color_white(), 0);
