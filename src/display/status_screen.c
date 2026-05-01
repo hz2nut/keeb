@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <zephyr/kernel.h>
 #include <zmk/display.h>
 #include "key_status.h"
 
