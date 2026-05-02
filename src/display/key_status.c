@@ -65,10 +65,10 @@ static void keycode_to_str(uint16_t page, uint32_t kc, uint8_t mods, char *buf, 
 		case 0x2A: snprintf(buf, len, "BSP"); return;
 		case 0x2B: snprintf(buf, len, "TAB"); return;
 		case 0x2C: snprintf(buf, len, "SPC"); return;
-		case 0x4F: snprintf(buf, len, "→");   return;
-		case 0x50: snprintf(buf, len, "←");   return;
-		case 0x51: snprintf(buf, len, "↓");   return;
-		case 0x52: snprintf(buf, len, "↑");   return;
+		case 0x4F: snprintf(buf, len, ">");    return;
+		case 0x50: snprintf(buf, len, "<");    return;
+		case 0x51: snprintf(buf, len, "v");    return;
+		case 0x52: snprintf(buf, len, "^");    return;
 		case 0x4A: snprintf(buf, len, "HOM"); return;
 		case 0x4D: snprintf(buf, len, "END"); return;
 		case 0x4B: snprintf(buf, len, "PGU"); return;
