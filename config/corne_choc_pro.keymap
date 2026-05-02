@@ -189,18 +189,18 @@
       base1_layer {
          display-name = "BASE1";
          bindings = <
-            &kp F     &kp D &kp I &kp S &kp J &none
-            &kp SPACE &kp T &kp E &kp N &kp Q &none
-            &kp U     &kp C &kp O &kp R &kp Z
+            &kp G     &kp D &kp I &kp N &kp Z &none
+            &kp SPACE &kp T &kp E &kp R &kp Q &none
+            &kp P     &kp M &kp A &kp S &kp J
             &sl ARROWS &sl BASE2 &sl SYM1
             >;
       };
       base2_layer {
          display-name = "BASE2";
          bindings = <
-            &kp V &kp G &kp Y &kp X &none       &none
-            &kp P &kp M &kp A &kp L &lang1 KOR1 &none
-            &kp W &kp B &kp K &kp H &lang2 KOR1
+            &kp W &kp F &kp K &kp X &none       &none
+            &kp U &kp C &kp O &kp L &lang1 KOR1 &none
+            &kp V &kp B &kp Y &kp H &lang2 KOR1
             &trans &to BASE1 &trans
             >;
       };
