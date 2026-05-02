@@ -153,7 +153,7 @@ static void draw_btm(struct zmk_widget_key_status *w) {
 	lv_obj_t *canvas = lv_obj_get_child(w->obj, 2);
 	lv_canvas_fill_bg(canvas, lv_color_black(), LV_OPA_COVER);
 
-	canvas_draw_str(canvas, 0, 5, CANVAS_SIZE, lv_color_white(),
+	canvas_draw_str(canvas, 0, 14, CANVAS_SIZE, lv_color_white(),
 	                &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER, active_state.layer);
 	rotate_canvas(canvas, w->cbuf_btm);
 }
@@ -257,12 +257,12 @@ int zmk_widget_key_status_init(struct zmk_widget_key_status *widget, lv_obj_t *p
 	                     LV_IMG_CF_TRUE_COLOR);
 
 	lv_obj_t *canvas_mid = lv_canvas_create(widget->obj);
-	lv_obj_align(canvas_mid, LV_ALIGN_TOP_LEFT, 24, 0);
+	lv_obj_align(canvas_mid, LV_ALIGN_TOP_LEFT, 46, 0);
 	lv_canvas_set_buffer(canvas_mid, widget->cbuf_mid, CANVAS_SIZE, CANVAS_SIZE,
 	                     LV_IMG_CF_TRUE_COLOR);
 
 	lv_obj_t *canvas_btm = lv_canvas_create(widget->obj);
-	lv_obj_align(canvas_btm, LV_ALIGN_TOP_LEFT, -44, 0);
+	lv_obj_align(canvas_btm, LV_ALIGN_TOP_LEFT, -22, 0);
 	lv_canvas_set_buffer(canvas_btm, widget->cbuf_btm, CANVAS_SIZE, CANVAS_SIZE,
 	                     LV_IMG_CF_TRUE_COLOR);
 
