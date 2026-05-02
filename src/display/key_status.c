@@ -18,6 +18,7 @@
 #include <zmk/endpoints.h>
 #if IS_ENABLED(CONFIG_ZMK_BLE)
 #include <zmk/ble.h>
+#include <zmk/events/ble_active_profile_changed.h>
 #endif
 #include "key_status.h"
 
@@ -128,10 +129,10 @@ static void draw_top(struct zmk_widget_key_status *w) {
 	char bat_str[8];
 	snprintf(bat_str, sizeof(bat_str), "%d%%", active_state.battery);
 
-	canvas_draw_str(canvas, 0, 2, 34, lv_color_white(),
-	                &lv_font_montserrat_14, LV_TEXT_ALIGN_LEFT, active_state.conn);
-	canvas_draw_str(canvas, 34, 2, 34, lv_color_white(),
-	                &lv_font_montserrat_14, LV_TEXT_ALIGN_RIGHT, bat_str);
+	canvas_draw_str(canvas, 2, 2, 32, lv_color_white(),
+	                &lv_font_montserrat_14, LV_TEXT_ALIGN_LEFT, bat_str);
+	canvas_draw_str(canvas, 34, 2, 32, lv_color_white(),
+	                &lv_font_montserrat_14, LV_TEXT_ALIGN_RIGHT, active_state.conn);
 	rotate_canvas(canvas, w->cbuf_top);
 }
 
@@ -141,7 +142,7 @@ static void draw_mid(struct zmk_widget_key_status *w) {
 
 	bool single = (strlen(active_state.key) == 1);
 	const lv_font_t *font = single ? &lv_font_montserrat_26 : &lv_font_montserrat_16;
-	lv_coord_t y_off = single ? 21 : 26;
+	lv_coord_t y_off = single ? 19 : 24;
 
 	canvas_draw_str(canvas, 0, y_off, CANVAS_SIZE, lv_color_white(),
 	                font, LV_TEXT_ALIGN_CENTER, active_state.key);
@@ -238,6 +239,9 @@ static struct conn_state conn_get_state(const zmk_event_t *eh) {
 }
 ZMK_DISPLAY_WIDGET_LISTENER(widget_conn, struct conn_state, conn_update_cb, conn_get_state)
 ZMK_SUBSCRIPTION(widget_conn, zmk_endpoint_changed);
+#if IS_ENABLED(CONFIG_ZMK_BLE)
+ZMK_SUBSCRIPTION(widget_conn, zmk_ble_active_profile_changed);
+#endif
 
 /* ------------------------------------------------------------------ */
 /*  Widget init                                                         */
